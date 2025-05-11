@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/Suns3tz/Padron-Electoral-Apache-Pig-Tez-/issues"
   },
-  "homepage": "https://github.com/Suns3tz/Padron-Electoral-Apache-Pig-Tez-#readme"
+  "homepage": "https://github.com/Suns3tz/Padron-Electoral-Apache-Pig-Tez-#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "shelljs": "^0.10.0"
+  }
 }
