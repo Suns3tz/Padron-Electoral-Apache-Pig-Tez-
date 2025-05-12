@@ -1,0 +1,90 @@
+/* Definición de variables de color para facilitar la personalización y mantener la consistencia */
+:root {
+    --rojo-cr: #ce1126; /* Rojo característico */
+    --azul-cr: #002b7f; /* Azul característico */
+    --blanco-cr: #ffffff; /* Blanco */
+    --gris-suave: #f4f4f4; /* Gris suave para el fondo */
+    --borde: #dddddd; /* Color para bordes */
+    --texto: #333333; /* Color del texto principal */
+  }
+  
+  /* Estilos generales para el cuerpo de la página */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente sans-serif moderna */
+    background-color: var(--gris-suave); /* Fondo gris suave */
+    margin: 0; /* Elimina márgenes predeterminados */
+    padding: 0; /* Elimina relleno predeterminado */
+  }
+  
+  /* Contenedor principal del componente SearchIdentification */
+  .search-id-app {
+    max-width: 900px; /* Ancho máximo del contenedor */
+    margin: 40px auto; /* Margen superior de 40px y centrado automático */
+    background-color: var(--blanco-cr); /* Fondo blanco */
+    padding: 30px; /* Espaciado interno */
+    border-radius: 12px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave para dar profundidad */
+  }
+  
+  /* Barra de navegación en la parte superior */
+  .navbar {
+    background-color: var(--azul-cr); /* Fondo azul */
+    color: var(--blanco-cr); /* Color del texto blanco */
+    padding: 20px; /* Espaciado interno */
+    border-radius: 8px; /* Bordes redondeados */
+    text-align: center; /* Centra el texto */
+    margin-bottom: 30px; /* Espacio debajo de la barra */
+  }
+  
+  /* Contenedor principal de contenido */
+  .main-content {
+    color: var(--texto); /* Color del texto principal */
+  }
+  
+  /* Estilos para la etiqueta de búsqueda */
+  .search-container label {
+    display: block; /* Hace que la etiqueta sea un bloque de línea */
+    margin-bottom: 10px; /* Espacio debajo de la etiqueta */
+    font-weight: bold; /* Negrita para la etiqueta */
+  }
+  
+  /* Estilos para el campo de entrada de la cédula */
+  .search-container input {
+    font-size: 16px; /* Tamaño de fuente adecuado */
+    padding: 10px; /* Relleno interno para el campo */
+    margin: 10px 0; /* Margen arriba y abajo */
+    border-radius: 6px; /* Bordes redondeados */
+    border: 1px solid var(--borde); /* Borde gris suave */
+    width: 100%; /* Ancho completo */
+    box-sizing: border-box; /* Asegura que el relleno y el borde no afecten el tamaño total */
+  }
+  
+  /* Estilos para el botón de búsqueda */
+  .search-container button {
+    background-color: var(--rojo-cr); /* Fondo rojo */
+    color: var(--blanco-cr); /* Color de texto blanco */
+    font-weight: bold; /* Negrita para el texto */
+    cursor: pointer; /* Cambio de cursor al pasar sobre el botón */
+    padding: 10px; /* Relleno interno */
+    width: 100%; /* Ancho completo */
+    border: none; /* Elimina borde predeterminado */
+    border-radius: 6px; /* Bordes redondeados */
+    margin-top: 10px; /* Espacio superior */
+    transition: background-color 0.3s ease; /* Transición suave para el color de fondo */
+  }
+  
+  /* Efecto de hover para el botón de búsqueda */
+  .search-container button:hover {
+    background-color: #a70d1e; /* Cambia el fondo a un rojo más oscuro al pasar el ratón */
+  }
+  
+  /* Contenedor de resultados de la búsqueda */
+  .resultado-container {
+    margin-top: 20px; /* Margen superior */
+    padding: 15px; /* Relleno interno */
+    background-color: #f9f9f9; /* Fondo gris muy suave */
+    border-left: 4px solid var(--rojo-cr); /* Borde izquierdo rojo para destacar */
+    border-radius: 8px; /* Bordes redondeados */
+    color: var(--texto); /* Color del texto */
+  }
+  
