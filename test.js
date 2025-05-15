@@ -114,7 +114,7 @@ function ejecutarPig(cedula, callback) {
 }
 
 /*
-Funcion temporal para probar el script. Esta recibe una cedula.
+Se llama la funcion ejecutarPig con una cedula.
 */
 ejecutarPig("103410517", (err, datos) => {
     if (err) {
