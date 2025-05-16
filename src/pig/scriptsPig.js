@@ -55,17 +55,14 @@ function formatearResultadoD(stdout) {
         const valoresCrudos = linea.trim().slice(1, -1).split(',');
         const valores = valoresCrudos.map(v => v.trim());
 
-        // Validar que hay exactamente 7 campos
-        if (valores.length !== 7) return null;
+        // Validar que hay exactamente 4 campos
+        if (valores.length !== 4) return null;
 
         return {
             cedula: valores[0],
             nombre: valores[1],
-            apellido1: valores[2],
-            apellido2: valores[3],
-            provincia: valores[4],
-            canton: valores[5],
-            distrito: valores[6]
+            fechacaduc: valores[2],
+            junta: valores[3]
         };
     });
 
@@ -88,7 +85,7 @@ function buscarPorCedula(cedula, callback) {
     
     const script = 
     `
-        padron_raw = LOAD '/home/william/Documents/GitHub/Padron-Electoral-Apache-Pig-Tez-/src/pig/PADRON_COMPLETO.txt' USING PigStorage(',') 
+        padron_raw = LOAD '${rutaPadron}' USING PigStorage(',') 
         AS (
             cedula:chararray, 
             codelec:chararray, 
@@ -111,7 +108,7 @@ function buscarPorCedula(cedula, callback) {
 
         padron_filtrado = FILTER padron_limpio BY cedula == '${cedula}';
 
-        distritos = LOAD '/home/william/Documents/GitHub/Padron-Electoral-Apache-Pig-Tez-/src/pig/distelec.txt' USING PigStorage(',') 
+        distritos = LOAD '${rutaDistelec}' USING PigStorage(',') 
         AS (
             codelec:chararray, 
             provincia:chararray, 
@@ -163,7 +160,6 @@ Función que recibe un distrito y ejecuta el script en Pig para buscar
 las personas asociadas a dicho distrito.
 */
 function buscarPorDistrito(distritoBuscado, callback) {
-
     // Validar existencia de archivos
     if (!fs.existsSync(rutaPadron)) {
         return callback(new Error(`Archivo no encontrado: ${rutaPadron}`));
@@ -174,7 +170,7 @@ function buscarPorDistrito(distritoBuscado, callback) {
     
     const script = 
     `
-        padron_raw = LOAD '/home/william/Documents/GitHub/Padron-Electoral-Apache-Pig-Tez-/src/pig/PADRON_COMPLETO.txt' USING PigStorage(',') 
+        padron_raw = LOAD '${rutaPadron}' USING PigStorage(',') 
         AS (
             cedula:chararray, 
             codelec:chararray, 
@@ -187,40 +183,23 @@ function buscarPorDistrito(distritoBuscado, callback) {
         );
 
         padron_limpio = FOREACH padron_raw GENERATE 
-            cedula,
+            TRIM(cedula) AS cedula,
             TRIM(codelec) AS codelec,
-            fechacaduc,
-            junta,
+            TRIM(fechacaduc) AS fechacaduc,
+            TRIM(junta) AS junta,
             TRIM(nombre) AS nombre,
             TRIM(apellido1) AS apellido1,
             TRIM(apellido2) AS apellido2;
 
-        distritos = LOAD '/home/william/Documents/GitHub/Padron-Electoral-Apache-Pig-Tez-/src/pig/distelec.txt' USING PigStorage(',') 
-        AS (
-            codelec:chararray, 
-            provincia:chararray, 
-            canton:chararray, 
-            distrito:chararray
-        );
+        padron_filtrado = FILTER padron_limpio BY TRIM(codelec) == TRIM('${distritoBuscado}');
 
-        distritos_limpios = FOREACH distritos GENERATE 
-            TRIM(codelec) AS codelec, 
-            provincia, 
-            canton, 
-            UPPER(TRIM(distrito)) AS distrito;
+        padron_ordenado = ORDER padron_filtrado BY cedula;
 
-        padron_con_regiones = JOIN padron_limpio BY codelec, distritos_limpios BY codelec;
-
-        resultado_filtrado = FILTER padron_con_regiones BY UPPER(TRIM(distrito)) == UPPER(TRIM('${distritoBuscado}'));
-
-        resultado = FOREACH resultado_filtrado GENERATE 
+        resultado = FOREACH padron_ordenado GENERATE 
             cedula,
-            nombre,
-            apellido1,
-            apellido2,
-            provincia,
-            canton,
-            distrito;
+            CONCAT(CONCAT(nombre, ' '), CONCAT(apellido1, CONCAT(' ', apellido2))) AS nombreCompleto,
+            fechacaduc,
+            junta;
 
         DUMP resultado;
 
@@ -231,7 +210,7 @@ function buscarPorDistrito(distritoBuscado, callback) {
         if (err) {
             return callback(err);
         }
-
+        
         exec(`pig -x local ${scriptPath}`, (error, stdout, stderr) => {
             if (error) {
                 return callback(error);
@@ -248,7 +227,70 @@ function buscarPorDistrito(distritoBuscado, callback) {
     });
 }
 
+/*
+Funcion que devuelve todos los distritos sin repetir.
+*/
+
+function obtenerDistritos(callback) {
+    if (!fs.existsSync(rutaDistelec)) {
+        return callback(new Error(`Archivo no encontrado: ${rutaDistelec}`));
+    }
+
+    const script = 
+    `
+        distritos = LOAD '${rutaDistelec}' USING PigStorage(',') 
+        AS (
+            codelec:chararray, 
+            provincia:chararray, 
+            canton:chararray, 
+            distrito:chararray
+        );
+
+        distritos_limpios = FOREACH distritos GENERATE 
+            TRIM(codelec) AS codelec,
+            UPPER(TRIM(provincia)) AS provincia,
+            UPPER(TRIM(canton)) AS canton,
+            UPPER(TRIM(distrito)) AS distrito;
+
+        distritos_unicos = DISTINCT distritos_limpios;
+
+        distritos_ordenados = ORDER distritos_unicos BY provincia, canton, distrito;
+
+        DUMP distritos_ordenados;
+    `;
+
+    const scriptPath = path.join(__dirname, 'script_tmp_distritos.pig');
+    fs.writeFile(scriptPath, script, (err) => {
+        if (err) {
+            return callback(err);
+        }
+
+        exec(`pig -x local ${scriptPath}`, (error, stdout, stderr) => {
+            if (error) {
+                return callback(error);
+            }
+
+            if (stderr) {
+                console.warn('Advertencia:', stderr);
+            }
+
+            fs.unlink(scriptPath, () => {}); // Elimina el archivo temporal
+            const distritos = stdout
+                .split('\n')
+                .filter(line => line.trim().startsWith('(') && line.includes(','))
+                .map(line => {
+                    const cleanLine = line.replace(/[()]/g, '').trim();
+                    const [codelec, provincia, canton, distrito] = cleanLine.split(',').map(x => x.trim());
+                    return { codelec, provincia, canton, distrito };
+                });
+
+            callback(null, distritos);
+        });
+    });
+}
+
 export { 
     buscarPorCedula, 
-    buscarPorDistrito 
+    buscarPorDistrito,
+    obtenerDistritos
 };

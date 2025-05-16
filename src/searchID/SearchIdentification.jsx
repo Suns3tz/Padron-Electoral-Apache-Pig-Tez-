@@ -11,6 +11,7 @@ const SearchIdentification = () => {
   // Se estableces las variables para manejar los estados
   const [cedula, setCedula] = useState('');
   const [resultado, setResultado] = useState(null);
+  const [buscando, setBuscando] = useState(false);
 
   // Función que se ejecuta al presionar "Buscar"
   const buscar = async () => {
@@ -19,6 +20,8 @@ const SearchIdentification = () => {
       toast.error('Por favor ingresa una cédula');
       return;
     }
+
+    setBuscando(true); // Comienza la búsqueda
 
     try {
       // Llamada POST a la API local para buscar la cédula
@@ -33,6 +36,8 @@ const SearchIdentification = () => {
       } else {
         toast.error('No se pudo conectar con el servidor');
       }
+    }finally {
+      setBuscando(false); // Termina la búsqueda
     }
   };
 
@@ -42,7 +47,7 @@ const SearchIdentification = () => {
   };
 
   const handleBuscarDistritoClick = () => {
-    window.location.href = '/distrito'; // redirige a la busqueda por distrito
+    window.location.href = '/district'; // redirige a la busqueda por distrito
   };
 
   return (
@@ -75,7 +80,9 @@ const SearchIdentification = () => {
               value={cedula}
               onChange={(e) => setCedula(e.target.value)}
             />
-            <button onClick={buscar}>Buscar</button>
+            <button onClick={buscar} disabled={buscando}>
+              {buscando ? 'Buscando...' : 'Buscar'}
+            </button>
           </div>
 
           {/* Contenedor de resultados */}

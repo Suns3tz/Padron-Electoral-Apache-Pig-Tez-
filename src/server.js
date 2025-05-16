@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { buscarPorCedula, buscarPorDistrito }from './pig/scriptsPig.js';
+import { buscarPorCedula, buscarPorDistrito, obtenerDistritos }from './pig/scriptsPig.js';
 
 const app = express();
 
@@ -32,10 +32,15 @@ app.post('/buscarCedula', (req, res) => {
     });
 });
 
+/*
+Este es el path que requiere el sistema para llamar la funcion que
+va a buscar los datos de las personas pertenecientes a 
+la region pasada por parametro.
+*/
+
 app.post('/buscarDistrito', (req, res) => {
     const { distrito } = req.body;
     const distritoStr = String(distrito).trim();
-    
     if (!distrito) {
         return res.status(400).json({ error: 'Distrito requerido' });
     }
@@ -48,6 +53,23 @@ app.post('/buscarDistrito', (req, res) => {
             return res.status(404).json({ error: 'No se encontraron datos' });
         }
 
+        res.json(datos);
+    });
+});
+
+/*
+Este es el path que requiere el sistema para llamar la funcion que
+va a obtener todos los distritos.
+*/
+
+app.post('/obtenerDistritos', (req, res) => {
+    obtenerDistritos((err, datos) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al ejecutar Pig', details: err.message });
+        }
+        if (!datos) {
+            return res.status(404).json({ error: 'No se encontraron datos' });
+        }
         res.json(datos);
     });
 });

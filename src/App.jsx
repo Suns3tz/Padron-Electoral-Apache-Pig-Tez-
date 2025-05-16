@@ -2,14 +2,14 @@ import './shared/App.css';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SearchIdentification from './searchID/SearchIdentification.jsx';
-import Distrito from './searchID/Distrito.jsx';
+import District from './searchID/District.jsx';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<SearchIdentification />} />
-        <Route path="/distrito" element={<Distrito />} />
+        <Route path="/district" element={<District />} />
       </Routes>
     </Router>
   );
