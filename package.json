@@ -4,7 +4,11 @@
   "description": "Repositorio para la investigación en el curso de Bases de Datos II con el próposito de utilizar Apache Pig y Tez, demostrar su funcionalidad utilizando datos recolectados del Padron Electoral Costarricense.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "react-scripts test",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "server": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -15,9 +19,24 @@
   "bugs": {
     "url": "https://github.com/Suns3tz/Padron-Electoral-Apache-Pig-Tez-/issues"
   },
-  "homepage": "https://github.com/Suns3tz/Padron-Electoral-Apache-Pig-Tez-#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-scripts": "^5.0.1",
     "shelljs": "^0.10.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
